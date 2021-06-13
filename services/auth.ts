@@ -15,14 +15,10 @@ const { JWT_SECRET } = process.env
  */
 export const generateAccessAndRefreshToken = async (accessTokenDetails: AccessTokenDetails, refreshTokenPayload: RefreshTokenDetails, userId: string) => {
   if (!JWT_SECRET) throw 'secret missing'
-  let accessToken, refreshToken
+  let accessToken: string, refreshToken: string
   try {
-    const tokens = await Promise.all([
-      generateJWT(accessTokenDetails.payload, JWT_SECRET, accessTokenDetails.options),
-      generateJWT(refreshTokenPayload.payload, JWT_SECRET, refreshTokenPayload.options)
-    ])
-    accessToken = tokens[0]
-    refreshToken = tokens[1]
+    accessToken = generateJWT(accessTokenDetails.payload, JWT_SECRET, accessTokenDetails.options)
+    refreshToken = generateJWT(refreshTokenPayload.payload, JWT_SECRET, refreshTokenPayload.options)
   } catch (generateError) {
     throw generateError
   }

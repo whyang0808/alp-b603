@@ -1,5 +1,5 @@
 /**
- * Checks if the object has keys that are undefined or null.
+ * Checks if the object has keys with values that are undefined or null.
  * Optional fields are allowed, for example -> optionalFields = ['phone'],
  * means the "phone" value in "data" object is allowed to be undefined or null.
  * @param data - object

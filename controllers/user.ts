@@ -115,7 +115,7 @@ export default class UserController extends BaseController {
     try {
       const { accessToken, refreshToken } = await generateAccessAndRefreshToken(accessTokenDetails, refreshTokenDetails, user._id)
       res.cookie('rt', refreshToken, { httpOnly: true, sameSite: true, secure: true })
-      return this.ok(res, { token: accessToken, refreshToken })
+      return this.ok(res, { token: accessToken })
     } catch (tokenError) {
       console.log(tokenError, 'failed to generate access and refresh token')
       return this.internalServerError(res)

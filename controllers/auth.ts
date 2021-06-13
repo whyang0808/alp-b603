@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { BaseController } from './base'
-import { validateJWT, generateJWT, validateHash } from '../utils/auth'
+import { validateJWT, validateHash } from '../utils/auth'
 import { getUserWithId } from '../services/user'
 import { AccessTokenDetails, RefreshTokenDetails } from '../interfaces/token'
 import { generateAccessAndRefreshToken } from '../services/auth'
@@ -22,7 +22,7 @@ export default class AuthController extends BaseController {
 
     let payload: Record<string, any> | string
     try {
-      payload = await validateJWT(rt, JWT_SECRET)
+      payload = validateJWT(rt, JWT_SECRET)
       if (!payload.sub) return this.unauthorized(res)
     } catch (error) {
       return this.unauthorized(res)
