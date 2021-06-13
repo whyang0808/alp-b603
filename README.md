@@ -15,6 +15,18 @@ You can generate a JWT_SECRET by running `openssl rand -base64 172 | tr -d '\n'`
 
 1. After setting up your env variables, run `yarn install`. Make sure you are in the root directory of the project.
 2. After the packages are installed, run `yarn start`.
+3. Create a database with name `alp-b603-local` in your local db. This name can be anything as long as its the same in the `.env` file.
+
+## Project structure
+The requests flow:
+> `Routes` => `Controller` => `Service` => `Model`
+
+Services should contain most of the logic and if best should be reusable, controllers should trigger the services and not trigger the models directly.
+
+Enums, interfaces, and types should be defined in `/interfaces` directory.
+
+## Tools
+Database Tool: Any mongodb GUI, recommended [NoSQLBooster](https://www.nosqlbooster.com/).
 
 ## Production setup
 To be changed.
