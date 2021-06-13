@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import jwt from 'jsonwebtoken'
 import { BaseController } from '../controllers/base'
+import { ErrorMessage } from '../interfaces/error'
 
 const { JWT_SECRET } = process.env
 
@@ -16,7 +17,7 @@ export default class AuthMiddleware extends BaseController {
     try {
       jwt.verify(jwtToken, JWT_SECRET)
     } catch (jwtError) {
-      if (jwtError.name === 'TokenExpiredError') return this.unauthorized(res, 'TokenExpiredError')
+      if (jwtError.name === 'TokenExpiredError') return this.unauthorized(res, ErrorMessage.TOKEN_EXPIRED)
       return this.unauthorized(res)
     }
     return next()
