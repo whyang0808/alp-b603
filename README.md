@@ -21,7 +21,7 @@ You can generate a JWT_SECRET by running `openssl rand -base64 172 | tr -d '\n'`
 The requests flow:
 > `Routes` => `Controller` => `Service` => `Model`
 
-Services should contain most of the logic and if best should be reusable, controllers should trigger the services and not trigger the models directly.
+Services should contain most of the db logic/query and if best should be reusable, controllers contain the business logic and should trigger the services and not trigger the models directly.
 
 Enums, interfaces, and types should be defined in `/interfaces` directory.
 
