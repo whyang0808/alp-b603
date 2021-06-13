@@ -11,7 +11,7 @@ const { JWT_SECRET } = process.env
  * Generates both access token and refresh token, then save new hashed refresh token in user db.
  * @param accessTokenDetails - An object containing access token payload and options.
  * @param refreshTokenPayload - An object containing refresh token payload and options.
- * @returns A promise of an array of string where by the first value is the access token and second value is the refresh token.
+ * @returns An object containing the access token and refresh token.
  */
 export const generateAccessAndRefreshToken = async (accessTokenDetails: AccessTokenDetails, refreshTokenPayload: RefreshTokenDetails, userId: string) => {
   if (!JWT_SECRET) throw 'secret missing'
