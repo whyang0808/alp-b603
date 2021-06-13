@@ -11,7 +11,7 @@ export default class AuthController extends BaseController {
    * 2) Validate refresh token
    * 3) Generate new access token
    */
-  refreshAccessToken(req: Request, res:Response) {
+  refreshAccessToken (req: Request, res:Response) {
     const { rt } = req.cookies
     if (!rt) return this.unauthorized(res)
     if (!JWT_SECRET) return this.internalServerError(res)

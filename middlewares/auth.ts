@@ -8,7 +8,7 @@ export default class AuthMiddleware extends BaseController {
   /**
    * Middleware to verify if access token is valid. This middleware should be present on most if not all endpoints.
    */
-  verifyJWT(req: Request, res: Response, next: NextFunction) {
+  verifyJWT (req: Request, res: Response, next: NextFunction) {
     if (!JWT_SECRET) return this.internalServerError(res)
     const authorizationHeader = req.header('Authorization') || req.header('authorization')
     if (!authorizationHeader) return this.unauthorized(res)

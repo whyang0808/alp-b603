@@ -16,14 +16,14 @@ mongoose
   .then(() => console.log(`Connected to ${DATABASE_CONNECTION_STRING} and database=${DATABASE}`))
   .catch(err => console.log(err))
 
-//Configure isProduction variable
-const isProduction = process.env.NODE_ENV === 'production';
+// Configure isProduction variable
+const isProduction = process.env.NODE_ENV === 'production'
 
-//Initiate our app
-const app = express();
+// Initiate our app
+const app = express()
 
-//Configure our app
-app.use(cors());
+// Configure our app
+app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
@@ -31,4 +31,4 @@ app.use(express.urlencoded({ extended: false }))
 app.use('/user', userRoutes)
 app.use('/auth', authRoutes)
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`))
