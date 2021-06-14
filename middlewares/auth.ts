@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from 'express'
+import dotenv from 'dotenv'
 import { BaseController } from '../controllers/base'
 import { ErrorMessage } from '../interfaces/error'
 import { validateJWT } from '../utils/auth'
 
+dotenv.config()
 const { JWT_SECRET } = process.env
 
 export default class AuthMiddleware extends BaseController {
