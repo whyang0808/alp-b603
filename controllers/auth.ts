@@ -5,7 +5,7 @@ import { getUserWithId } from '../services/user'
 import { AccessTokenDetails, RefreshTokenDetails } from '../interfaces/token'
 import { generateAccessAndRefreshToken } from '../services/auth'
 
-const { JWT_SECRET } = process.env
+const { JWT_SECRET, NODE_ENV } = process.env
 
 export default class AuthController extends BaseController {
   /**
@@ -18,7 +18,7 @@ export default class AuthController extends BaseController {
     if (!req.cookies) return this.unauthorized(res)
     const { rt } = req.cookies
     if (!rt) return this.unauthorized(res)
-    if (!JWT_SECRET) return this.internalServerError(res)
+    if (!JWT_SECRET || !NODE_ENV) return this.internalServerError(res)
 
     let payload: Record<string, any> | string
     try {
@@ -65,7 +65,7 @@ export default class AuthController extends BaseController {
     }
     try {
       const { accessToken, refreshToken } = await generateAccessAndRefreshToken(accessTokenDetails, refreshTokenDetails, user._id)
-      res.cookie('rt', refreshToken, { httpOnly: true, sameSite: true, secure: true })
+      res.cookie('rt', refreshToken, { httpOnly: true, sameSite: true, secure: NODE_ENV === 'production' ? true : false })
       return this.ok(res, { token: accessToken })
     } catch (tokenError) {
       console.log(tokenError, 'failed to generate access and refresh token')
