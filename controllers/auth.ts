@@ -14,7 +14,7 @@ export default class AuthController extends BaseController {
    * 3) Compare refresh token with hash in db.
    * 4) Generate new refresh and access token.
    */
-  async refreshAccessToken(req: Request, res:Response) {
+  public refreshAccessToken = async (req: Request, res:Response) => {
     if (!req.cookies) return this.unauthorized(res)
     const { rt } = req.cookies
     if (!rt) return this.unauthorized(res)
