@@ -9,6 +9,8 @@ import { generateAccessAndRefreshToken } from '../services/auth'
 import { AccessTokenDetails, RefreshTokenDetails } from '../interfaces/token'
 import { validateHash } from '../utils/auth'
 
+const { NODE_ENV } = process.env
+
 export default class UserController extends BaseController {
   /**
    * Creates a user.
@@ -17,7 +19,7 @@ export default class UserController extends BaseController {
    * 3) Hash the password before saving to db.
    * 4) Create the user if all is smooth.
    */
-  public async create(req: Request, res: Response) {
+  public create = async (req: Request, res: Response) => {
     const { 
       firstName,
       lastName,
@@ -68,7 +70,8 @@ export default class UserController extends BaseController {
    * 4) Generate access and refresh token.
    * 5) Set refresh token as http-only cookie and return access token in response body.
    */
-  public async logIn(req: Request, res: Response) {
+  public logIn = async (req: Request, res: Response) => {
+    if (!NODE_ENV) return this.internalServerError(res)
     const { email, password } = req.body
     try {
       validateObject({ email, password }, [])
@@ -114,7 +117,7 @@ export default class UserController extends BaseController {
     }
     try {
       const { accessToken, refreshToken } = await generateAccessAndRefreshToken(accessTokenDetails, refreshTokenDetails, user._id)
-      res.cookie('rt', refreshToken, { httpOnly: true, sameSite: true, secure: true })
+      res.cookie('rt', refreshToken, { httpOnly: true, sameSite: true, secure: NODE_ENV === 'production' ? true : false })
       return this.ok(res, { token: accessToken })
     } catch (tokenError) {
       console.log(tokenError, 'failed to generate access and refresh token')

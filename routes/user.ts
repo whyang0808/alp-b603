@@ -6,8 +6,8 @@ const router = Router()
 const auth = new AuthMiddleware()
 const user = new UserController()
 
-router.route('/create').post((req, res) => user.create(req, res))
+router.route('/create').post(user.create)
 
-router.route('/login').post((req, res) => user.logIn(req, res))
+router.route('/login').post(user.logIn)
 
 export default router
