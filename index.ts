@@ -1,4 +1,4 @@
-import express, { RequestHandler } from 'express'
+import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
@@ -8,7 +8,7 @@ import authRoutes from './routes/auth'
 
 // Setup env
 dotenv.config()
-const { DATABASE_CONNECTION_STRING, DATABASE, PORT } = process.env
+const { DATABASE_CONNECTION_STRING, DATABASE, PORT, NODE_ENV } = process.env
 
 // Setup database
 if (!DATABASE_CONNECTION_STRING || !DATABASE) throw 'Database string is undefined'
@@ -18,13 +18,17 @@ mongoose
   .catch(err => console.log(err))
 
 // Configure isProduction variable
-const isProduction = process.env.NODE_ENV === 'production'
+const isProduction = NODE_ENV === 'production'
 
 // Initiate our app
 const app = express()
 
 // Configure our app
-app.use(cors())
+app.use(cors({
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  origin: isProduction ? [] : ['http://localhost:3000', 'http://localhost:4000']
+}))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())

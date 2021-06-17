@@ -20,7 +20,7 @@ export default class UserController extends BaseController {
    * 4) Create the user if all is smooth.
    */
   public create = async (req: Request, res: Response) => {
-    const { 
+    const {
       firstName,
       lastName,
       email,
@@ -50,7 +50,7 @@ export default class UserController extends BaseController {
       console.log(hashError, 'hash password error')
       return this.internalServerError(res)
     }
- 
+
     try {
       const response = await createUser(createUserData)
       response.password = undefined
@@ -81,7 +81,7 @@ export default class UserController extends BaseController {
 
     let user: Record<string, any>
     try {
-      user = await getUserWithEmail(email,  { email: 1, password: 1 })
+      user = await getUserWithEmail(email, { email: 1, password: 1 })
       if (!user) return this.clientError(res, ErrorMessage.EMAIL_OR_PASSWORD_WRONG)
     } catch (userExistsError) {
       console.log(userExistsError, 'check user exists error')
@@ -117,7 +117,7 @@ export default class UserController extends BaseController {
     }
     try {
       const { accessToken, refreshToken } = await generateAccessAndRefreshToken(accessTokenDetails, refreshTokenDetails, user._id)
-      res.cookie('rt', refreshToken, { httpOnly: true, sameSite: true, secure: NODE_ENV === 'production' ? true : false })
+      res.cookie('rt', refreshToken, { httpOnly: true, sameSite: true, secure: NODE_ENV === 'production' })
       return this.ok(res, { token: accessToken })
     } catch (tokenError) {
       console.log(tokenError, 'failed to generate access and refresh token')

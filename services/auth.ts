@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import bcrypt from 'bcrypt'
-import { AccessTokenDetails, RefreshTokenDetails } from "../interfaces/token"
-import { generateJWT } from "../utils/auth"
+import { AccessTokenDetails, RefreshTokenDetails } from '../interfaces/token'
+import { generateJWT } from '../utils/auth'
 import { updateOneUser } from './user'
 
 dotenv.config()
