@@ -1,5 +1,5 @@
 import { FilterQuery, QueryOptions, UpdateQuery, UpdateWithAggregationPipeline } from 'mongoose'
-import { CreateUserInterface } from '../types/user'
+import { CreateUserInterface, ROLES } from '../types/user'
 import UserModel from '../models/user'
 
 export const checkUserExistsWithIdNumber = async (idNumber: string) => UserModel.exists({ idNumber })
@@ -13,3 +13,5 @@ export const getUserPasswordHash = async (email: string) => UserModel.findOne({ 
 export const createUser = async (data: CreateUserInterface) => UserModel.create(data)
 
 export const updateOneUser = async (query: FilterQuery<any>, update: UpdateQuery<any> | UpdateWithAggregationPipeline, options: QueryOptions | null = null) =>  UserModel.updateOne(query, update, options)
+
+export const assignUserRole = async (userId: string, role: ROLES) => UserModel.updateOne({ id: userId }, { $push: { roles: role } });

@@ -28,6 +28,9 @@ Enums, interfaces, and types should be defined in `/interfaces` directory.
 ## Tools
 Database Tool: Any mongodb GUI, recommended [NoSQLBooster](https://www.nosqlbooster.com/).
 
+## Documentation
+You can include new API documentation in the `apidocs.yaml` file in the root directory. Additionally, visit http://localhost:8000/docs to download the documentation and import the file in `https://editor.swagger.io` or use a browser extension to read the yaml file.
+
 ## Production setup
 To be changed.
 1. Run `yarn build`
