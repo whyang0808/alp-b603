@@ -12,3 +12,11 @@ export interface CreateUserInterface {
   idNumber: string;
   password: string;
 }
+
+export enum ROLE {
+  SUPERADMIN = 'superadmin',
+  ADMIN = 'admin',
+  AGENT = 'agent',
+  DEVELOPER = 'developer',
+  UNKNOWN = 'unknown'
+}

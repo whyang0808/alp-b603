@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import dotenv from 'dotenv'
 import { BaseController } from '../controllers/base'
-import { ErrorMessage } from '../interfaces/error'
+import { ErrorMessage } from '../types/error'
 import { validateJWT } from '../utils/auth'
 
 dotenv.config()

@@ -1,6 +1,6 @@
 import dotenv from 'dotenv'
 import bcrypt from 'bcrypt'
-import { AccessTokenDetails, RefreshTokenDetails } from '../interfaces/token'
+import { AccessTokenDetails, RefreshTokenDetails } from '../types/token'
 import { generateJWT } from '../utils/auth'
 import { updateOneUser } from './user'
 

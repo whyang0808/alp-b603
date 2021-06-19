@@ -3,10 +3,10 @@ import { Request, Response } from 'express'
 import { BaseController } from './base'
 import { checkUserExistsWithIdNumber, getUserWithEmail, createUser } from '../services/user'
 import { validateObject } from '../utils/form'
-import { CreateUserInterface } from '../interfaces/user'
-import { ErrorMessage } from '../interfaces/error'
+import { CreateUserInterface } from '../types/user'
+import { ErrorMessage } from '../types/error'
 import { generateAccessAndRefreshToken } from '../services/auth'
-import { AccessTokenDetails, RefreshTokenDetails } from '../interfaces/token'
+import { AccessTokenDetails, RefreshTokenDetails } from '../types/token'
 import { validateHash } from '../utils/auth'
 
 const { NODE_ENV } = process.env

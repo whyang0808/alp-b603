@@ -1,5 +1,5 @@
 import { FilterQuery, QueryOptions, UpdateQuery, UpdateWithAggregationPipeline } from 'mongoose'
-import { CreateUserInterface } from '../interfaces/user'
+import { CreateUserInterface } from '../types/user'
 import UserModel from '../models/user'
 
 export const checkUserExistsWithIdNumber = async (idNumber: string) => UserModel.exists({ idNumber })
