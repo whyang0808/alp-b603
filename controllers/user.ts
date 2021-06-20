@@ -130,7 +130,6 @@ export default class UserController extends BaseController {
    */
   public update = async (req: Request, res: Response) => {
     const { firstName, lastName, birthDate } = req.body
-    // TODO: check if frontend will return all fields or just updated one
     if (!firstName || !lastName || !birthDate) return this.clientError(res)
     const { userId } = res.locals
     if (!userId) return this.unauthorized(res)
