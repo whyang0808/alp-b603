@@ -15,8 +15,9 @@ export default class AuthMiddleware extends BaseController {
   public verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     if (!JWT_SECRET) return this.internalServerError(res)
     const authorizationHeader = req.header('Authorization') || req.header('authorization')
-    if (!authorizationHeader) return this.unauthorized(res)
+    if (!authorizationHeader) return this.unauthorized(res, ErrorMessage.MISSING_TOKEN)
     const jwtToken = authorizationHeader.split(' ')[1]
+    if (!jwtToken) return this.unauthorized(res, ErrorMessage.MISSING_TOKEN)
     try {
       const payload = validateJWT(jwtToken, JWT_SECRET)
       if (!payload) throw 'payload undefined'
