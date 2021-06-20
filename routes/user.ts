@@ -10,4 +10,6 @@ router.route('/create').post(user.create)
 
 router.route('/login').post(user.logIn)
 
+router.route('/update').post(auth.verifyJWT, user.update)
+
 export default router
