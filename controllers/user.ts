@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import { BaseController } from './base'
-import { checkUserExistsWithIdNumber, getUserWithEmail, createUser } from '../services/user'
+import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, findAndUpdateUser } from '../services/user'
 import { validateObject } from '../utils/form'
 import { CreateUserInterface } from '../interfaces/user'
 import { ErrorMessage } from '../interfaces/error'
@@ -118,9 +118,30 @@ export default class UserController extends BaseController {
     try {
       const { accessToken, refreshToken } = await generateAccessAndRefreshToken(accessTokenDetails, refreshTokenDetails, user._id)
       res.cookie('rt', refreshToken, { httpOnly: true, sameSite: true, secure: NODE_ENV === 'production' })
-      return this.ok(res, { token: accessToken })
+      return this.ok(res, { token: accessToken, userId: user._id })
     } catch (tokenError) {
       console.log(tokenError, 'failed to generate access and refresh token')
+      return this.internalServerError(res)
+    }
+  }
+
+  /**
+   * Update's a user's details and returns the updated user object
+   */
+  public update = async (req: Request, res: Response) => {
+    const { firstName, lastName, birthDate } = req.body
+    // TODO: check if frontend will return all fields or just updated one
+    if (!firstName || !lastName || !birthDate) return this.clientError(res)
+    const { userId } = res.locals
+    if (!userId) return this.unauthorized(res)
+    try {
+      const updatedUser = await findAndUpdateUser(
+        { _id: userId },
+        { firstName, lastName, birthDate },
+        { projection: { password: 0, refreshToken: 0, __v: 0 }
+      })
+      return this.ok(res, updatedUser)
+    } catch (updateError) {
       return this.internalServerError(res)
     }
   }

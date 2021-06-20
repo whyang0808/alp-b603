@@ -12,4 +12,12 @@ export const getUserPasswordHash = async (email: string) => UserModel.findOne({ 
 
 export const createUser = async (data: CreateUserInterface) => UserModel.create(data)
 
+/**
+ * Updates a document without returning the updated document, supposedly faster than findOneAndUpdate.
+ */
 export const updateOneUser = async (query: FilterQuery<any>, update: UpdateQuery<any> | UpdateWithAggregationPipeline, options: QueryOptions | null = null) =>  UserModel.updateOne(query, update, options)
+
+/**
+ * Updates a document and returns the updated document.
+ */
+export const findAndUpdateUser = async (query: FilterQuery<any>, update: UpdateQuery<any> | UpdateWithAggregationPipeline, options: QueryOptions | null = null) => UserModel.findOneAndUpdate(query, update, { ...options, new: true })
