@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import { BaseController } from './base'
-import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, findAndUpdateUser } from '../services/user'
+import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, updateOneUser } from '../services/user'
 import { validateObject } from '../utils/form'
 import { CreateUserInterface } from '../interfaces/user'
 import { ErrorMessage } from '../interfaces/error'
@@ -134,12 +134,11 @@ export default class UserController extends BaseController {
     const { userId } = res.locals
     if (!userId) return this.unauthorized(res)
     try {
-      const updatedUser = await findAndUpdateUser(
+      await updateOneUser(
         { _id: userId },
-        { firstName, lastName, birthDate },
-        { projection: { password: 0, refreshToken: 0, __v: 0 }
-      })
-      return this.ok(res, updatedUser)
+        { firstName, lastName, birthDate }
+      )
+      return this.ok(res)
     } catch (updateError) {
       return this.internalServerError(res)
     }
