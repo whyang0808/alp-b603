@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import { BaseController } from './base'
-import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, findAndUpdateUser } from '../services/user'
+import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, findAndUpdateUser, getUserInfo } from '../services/user'
 import { validateObject } from '../utils/form'
 import { CreateUserInterface } from '../interfaces/user'
 import { ErrorMessage } from '../interfaces/error'
@@ -137,11 +137,32 @@ export default class UserController extends BaseController {
       const updatedUser = await findAndUpdateUser(
         { _id: userId },
         { firstName, lastName, birthDate },
-        { projection: { password: 0, refreshToken: 0, __v: 0 }
-      })
+        { projection: { password: 0, refreshToken: 0, __v: 0 } }
+      )
       return this.ok(res, updatedUser)
     } catch (updateError) {
       return this.internalServerError(res)
     }
   }
+
+  /**
+   * find and return user info object
+   * ???
+   * const { userId } = res.locals from auth.verifyJWT -----OR-----
+   * const { userId } = req.params
+   */
+     public info = async (req: Request, res: Response) => {
+       const { userId } = res.locals
+       //  const { userId } = res.params
+       if (!userId) return this.unauthorized(res)
+       try {
+         const userInfo = await getUserInfo(
+           { _id: userId },
+           { password: 0, refreshToken: 0, __v: 0, _id: 0 }
+         )
+         return this.ok(res, userInfo)
+       } catch (updateError) {
+         return this.internalServerError(res)
+       }
+     }
 }

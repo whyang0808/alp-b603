@@ -22,7 +22,7 @@ export default class AuthMiddleware extends BaseController {
     try {
       const payload = validateJWT(jwtToken, JWT_SECRET)
       if (!payload) throw 'payload undefined'
-      res.locals.userId = (payload as AccessTokenDetails["payload"]).sub
+      res.locals.userId = (payload as AccessTokenDetails['payload']).sub
     } catch (jwtError) {
       if (jwtError.name === 'TokenExpiredError') return this.unauthorized(res, ErrorMessage.TOKEN_EXPIRED)
       return this.unauthorized(res)
