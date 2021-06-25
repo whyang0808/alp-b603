@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import { BaseController } from './base'
-import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, findAndUpdateUser, getUserInfo } from '../services/user'
+import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, findAndUpdateUser, getUserInfo, getUserWithId, updateOneUser } from '../services/user'
 import { validateObject } from '../utils/form'
 import { CreateUserInterface } from '../interfaces/user'
 import { ErrorMessage } from '../interfaces/error'
@@ -151,18 +151,69 @@ export default class UserController extends BaseController {
    * const { userId } = res.locals from auth.verifyJWT -----OR-----
    * const { userId } = req.params
    */
-     public info = async (req: Request, res: Response) => {
-       const { userId } = res.locals
-       //  const { userId } = res.params
-       if (!userId) return this.unauthorized(res)
-       try {
-         const userInfo = await getUserInfo(
-           { _id: userId },
-           { password: 0, refreshToken: 0, __v: 0, _id: 0 }
-         )
-         return this.ok(res, userInfo)
-       } catch (updateError) {
-         return this.internalServerError(res)
-       }
-     }
+  public info = async (req: Request, res: Response) => {
+    const { userId } = res.locals
+    //  const { userId } = res.params
+    if (!userId) return this.unauthorized(res)
+    try {
+      const userInfo = await getUserInfo(
+        { _id: userId },
+        { password: 0, refreshToken: 0, __v: 0, _id: 0 }
+      )
+      return this.ok(res, userInfo)
+    } catch (updateError) {
+      return this.internalServerError(res)
+    }
+  }
+
+  /**
+   * Find the user by user id
+   * Compare the current/old password with the hashPassword from the db
+   * Hash newPassword & update password subsequently
+   */
+  public updatePassword = async (req: Request, res: Response) => {
+    const { password, newPassword } = req.body
+    console.log('req.body', req.body)
+    if (!password || !newPassword) return this.clientError(res)
+
+    const { userId } = res.locals
+    if (!userId) return this.unauthorized(res)
+
+    let user: Record<string, any>
+    let hashedPassword: string
+
+    try {
+      user = await getUserWithId(userId, { password: 1 })
+      if (!user) return this.unauthorized(res)
+    } catch (getUserError) {
+      console.log(getUserError)
+      return this.internalServerError(res)
+    }
+
+    try {
+      const passwordMatch = await validateHash(password, user.password)
+      if (!passwordMatch) return this.clientError(res, ErrorMessage.EMAIL_OR_PASSWORD_WRONG)
+    } catch (compareError) {
+      console.log(compareError, 'password compare error')
+      return this.internalServerError(res)
+    }
+
+    try {
+      hashedPassword = await bcrypt.hash(newPassword, 10)
+    } catch (hashError) {
+      console.log(hashError, 'hash password error')
+      return this.internalServerError(res)
+    }
+
+    try {
+      const updatedUserPassword = await updateOneUser(
+        { _id: userId },
+        { password: hashedPassword },
+        { projection: { password: 0 } }
+      )
+      return this.ok(res, updatedUserPassword)
+    } catch (updateError) {
+      return this.internalServerError(res)
+    }
+  }
 }

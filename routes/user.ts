@@ -23,4 +23,6 @@ router.route('/update').post(auth.verifyJWT, user.update)
  */
 router.get('/get-user-info/:userId', auth.verifyJWT, user.info)
 
+router.post('/update-password', auth.verifyJWT, user.updatePassword)
+
 export default router
