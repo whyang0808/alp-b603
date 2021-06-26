@@ -16,4 +16,8 @@ router.route('/forgot-password').post(user.generateForgotPasswordLink)
 
 router.route('/reset-password').post(user.resetPassword)
 
+router.get('/get-user-info/:userId', auth.verifyJWT, user.info)
+
+router.post('/update-password', auth.verifyJWT, user.updatePassword)
+
 export default router
