@@ -9,6 +9,7 @@ PORT=8000
 DATABASE_CONNECTION_STRING=mongodb://localhost:27017
 DATABASE=alp-b603-local
 JWT_SECRET=<use whatever you want>
+FRONTEND_BASE_URL=http://localhost:3000
 ```
 You can generate a JWT_SECRET by running `openssl rand -base64 172 | tr -d '\n'` in the command line.
 ## Run project

@@ -16,3 +16,15 @@ export const validateObject = (data: Record<string, any>, optionalFields: string
     }
   }
 }
+
+/**
+ * Validates if an email is in the format "anything@anything.anything"
+ * https://stackoverflow.com/a/9204568/15091497
+ * @param email - string
+ * @returns boolean
+ */
+export const validateEmail = (email?: string): boolean => {
+  if (!email) return false
+  const re = /^[^\s@]+@[^\s@]+$/
+  return re.test(email)
+}

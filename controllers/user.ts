@@ -1,15 +1,16 @@
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
+import moment from 'moment'
 import { BaseController } from './base'
-import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, updateOneUser } from '../services/user'
-import { validateObject } from '../utils/form'
+import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, updateOneUser, getUserWithId } from '../services/user'
+import { validateEmail, validateObject } from '../utils/form'
 import { CreateUserInterface } from '../interfaces/user'
 import { ErrorMessage } from '../interfaces/error'
-import { generateAccessAndRefreshToken } from '../services/auth'
+import { createForgotPassword, generateAccessAndRefreshToken, getForgotPassword, updateForgotPassword } from '../services/auth'
 import { AccessTokenDetails, RefreshTokenDetails } from '../interfaces/token'
-import { validateHash } from '../utils/auth'
+import { generateUUID, validateHash } from '../utils/auth'
 
-const { NODE_ENV } = process.env
+const { NODE_ENV, FRONTEND_BASE_URL } = process.env
 
 export default class UserController extends BaseController {
   /**
@@ -35,6 +36,7 @@ export default class UserController extends BaseController {
     } catch (validateError) {
       return this.clientError(res)
     }
+    if (!validateEmail(email)) return this.clientError(res)
 
     try {
       const userExists = await checkUserExistsWithIdNumber(createUserData.idNumber)
@@ -139,6 +141,119 @@ export default class UserController extends BaseController {
         { firstName, lastName, birthDate }
       )
       return this.ok(res)
+    } catch (updateError) {
+      return this.internalServerError(res)
+    }
+  }
+
+  /**
+   * 1) Check if user with email exists
+   * 2) Generate and hash a token
+   * 3) Create a forgotPassword object in db
+   * 4) Generate reset password link and send to user email
+   */
+  public generateForgotPasswordLink = async (req: Request, res: Response) => {
+    const { email } = req.body
+    if (!email || !validateEmail(email)) return this.clientError(res)
+    let userId: string
+    try {
+      const user = await getUserWithEmail(email, { _id: 1 })
+      // user not found
+      if (!user) return this.clientError(res)
+      userId = user._id
+    } catch (userError) {
+      return this.internalServerError(res)
+    }
+
+    const token = generateUUID()
+    let tokenHash: string
+    try {
+      tokenHash = await bcrypt.hash(token, 10)
+    } catch (hashError) {
+      return this.internalServerError(res)
+    }
+
+    try {
+      const createdAt = new Date()
+      const expirationDate = moment(createdAt).add(10, 'm').toDate()
+      await createForgotPassword({
+        userId,
+        createdAt,
+        tokenHash,
+        expirationDate,
+        used: false,
+      })
+    } catch (createError) {
+      return this.internalServerError(res)
+    }
+
+    // TODO: send email to user and remove resetLink from response
+    const resetLink = `${FRONTEND_BASE_URL}/reset-password?email=${email}&token=${token}`
+    return this.ok(res, { resetLink })
+  }
+
+  /**
+   * 1) Check if user with email exists
+   * 2) Check if reset token has been used or expired, then check if its a valid hash
+   * 3) If all is good, set token to "used", then hash new password and update user in db.
+   */
+  public resetPassword = async (req: Request, res: Response) => {
+    const { email, token, newPassword } = req.body
+    if (!email || !validateEmail(email) || !token || !newPassword) return this.clientError(res)
+    let userId: string
+    try {
+      const user = await getUserWithEmail(email, { _id: 1 })
+      // user not found
+      if (!user) return this.clientError(res)
+      userId = user._id
+    } catch (userError) {
+      return this.internalServerError(res)
+    }
+
+    let forgotPassword: Record<string, any>
+    try {
+      // get the one that has not been used
+      forgotPassword = await getForgotPassword({ userId, used: false })
+      if (!forgotPassword) return this.clientError(res)
+    } catch (getError) {
+      return this.internalServerError(res)
+    }
+
+    const currentDate = moment(new Date())
+    // if token is used or expired
+    if (forgotPassword.used || currentDate.isAfter(moment(forgotPassword.expirationDate))) return this.unauthorized(res)
+
+    try {
+      const tokenMatch = await validateHash(token, forgotPassword.tokenHash)
+      // Need special error message?
+      if (!tokenMatch) return this.unauthorized(res)
+    } catch (compareError) {
+      return this.internalServerError(res)
+    }
+
+    let hashedPassword
+    try {
+      hashedPassword = await bcrypt.hash(newPassword, 10)
+    } catch (hashError) {
+      return this.internalServerError(res)
+    }
+
+    try {
+      await updateForgotPassword(
+        { _id: forgotPassword._id },
+        { used: true }
+      )
+    } catch (updateForgotPasswordError) {
+      return this.internalServerError(res)
+    }
+
+    try {
+      const updatedUserPassword = await updateOneUser(
+        { _id: userId },
+        { password: hashedPassword },
+        { projection: { password: 0 } }
+      )
+      return this.ok(res, updatedUserPassword)
     } catch (updateError) {
       return this.internalServerError(res)
     }
