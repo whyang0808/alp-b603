@@ -194,7 +194,7 @@ export default class UserController extends BaseController {
 
     try {
       const createdAt = new Date()
-      const expirationDate = moment(createdAt).add(10, 'm').toDate()
+      const expirationDate = moment(createdAt).add(15, 'm').toDate()
       await createForgotPassword({
         userId,
         createdAt,
