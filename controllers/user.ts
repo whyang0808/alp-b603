@@ -214,7 +214,7 @@ export default class UserController extends BaseController {
   /**
    * 1) Check if user with email exists
    * 2) Check if reset token has been used or expired, then check if its a valid hash
-   * 3) If all is good, set token to "used", then hash new password and update user in db.
+   * 3) If all is good, set token to "used" so the reset password link is invalidated, then hash new password and update user in db.
    */
   public resetPassword = async (req: Request, res: Response) => {
     const { email, token, newPassword } = req.body
