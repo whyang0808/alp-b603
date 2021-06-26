@@ -299,7 +299,6 @@ export default class UserController extends BaseController {
    */
   public updatePassword = async (req: Request, res: Response) => {
     const { password, newPassword } = req.body
-    console.log('req.body', req.body)
     if (!password || !newPassword) return this.clientError(res)
 
     const { userId } = res.locals
