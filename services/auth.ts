@@ -46,4 +46,4 @@ export const createForgotPassword = async (data: CreateForgotPasswordInterface) 
 
 export const getForgotPassword = async (query: FilterQuery<any>, projection: Record<string, any> = {}, options: QueryOptions | null = null) => ForgotPasswordModel.findOne(query, projection, options)
 
- export const updateForgotPassword = async (query: FilterQuery<any>, update: UpdateQuery<any> | UpdateWithAggregationPipeline, options: QueryOptions | null = null) =>  ForgotPasswordModel.updateOne(query, update, options)
+export const updateForgotPassword = async (query: FilterQuery<any>, update: UpdateQuery<any> | UpdateWithAggregationPipeline, options: QueryOptions | null = null) =>  ForgotPasswordModel.updateOne(query, update, options)
