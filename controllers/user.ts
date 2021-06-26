@@ -148,9 +148,10 @@ export default class UserController extends BaseController {
 
   /**
    * 1) Check if user with email exists
-   * 2) Generate and hash a token
-   * 3) Create a forgotPassword object in db
-   * 4) Generate reset password link and send to user email
+   * 2) Check if user still has active forgot password link, if yes, then invalidate the previous link
+   * 3) Generate and hash a token
+   * 4) Create a forgotPassword object in db
+   * 5) Generate reset password link and send to user email
    */
   public generateForgotPasswordLink = async (req: Request, res: Response) => {
     const { email } = req.body
@@ -163,6 +164,24 @@ export default class UserController extends BaseController {
       userId = user._id
     } catch (userError) {
       return this.internalServerError(res)
+    }
+
+    // Check if user still has active forgot password link, if yes, then invalidate the previous link
+    let hasForgotPassword
+    try {
+      hasForgotPassword = await getForgotPassword({ userId, used: false })
+    } catch (getForgotPasswordError) {
+      return this.internalServerError(res)
+    }
+    if (hasForgotPassword) {
+      try {
+        await updateForgotPassword(
+          { _id: hasForgotPassword._id },
+          { used: true }
+        )
+      } catch (updateError) {
+        return this.internalServerError(res)
+      }
     }
 
     const token = generateUUID()
