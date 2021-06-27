@@ -15,13 +15,14 @@ export default class AuthMiddleware extends BaseController {
   public verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     if (!JWT_SECRET) return this.internalServerError(res)
     const authorizationHeader = req.header('Authorization') || req.header('authorization')
-    if (!authorizationHeader) return this.unauthorized(res)
+    if (!authorizationHeader) return this.unauthorized(res, ErrorMessage.MISSING_TOKEN)
     const jwtToken = authorizationHeader.split(' ')[1]
-    let payload
+    // To check for "Authorization: Bearer undefined"
+    if (!jwtToken || jwtToken === 'undefined') return this.unauthorized(res, ErrorMessage.MISSING_TOKEN)
     try {
-      payload = validateJWT(jwtToken, JWT_SECRET)
+      const payload = validateJWT(jwtToken, JWT_SECRET)
       if (!payload) throw 'payload undefined'
-      res.locals.userId = (payload as AccessTokenDetails["payload"]).sub
+      res.locals.userId = (payload as AccessTokenDetails['payload']).sub
     } catch (jwtError) {
       if (jwtError.name === 'TokenExpiredError') return this.unauthorized(res, ErrorMessage.TOKEN_EXPIRED)
       return this.unauthorized(res)

@@ -1,8 +1,11 @@
 import dotenv from 'dotenv'
 import bcrypt from 'bcrypt'
+import { FilterQuery, QueryOptions, UpdateQuery, UpdateWithAggregationPipeline } from 'mongoose'
 import { AccessTokenDetails, RefreshTokenDetails } from '../types/token'
 import { generateJWT } from '../utils/auth'
 import { updateOneUser } from './user'
+import { CreateForgotPasswordInterface } from '../types/auth'
+import ForgotPasswordModel from '../models/forgotPassword'
 
 dotenv.config()
 const { JWT_SECRET } = process.env
@@ -38,3 +41,9 @@ export const generateAccessAndRefreshToken = async (accessTokenDetails: AccessTo
 
   return { accessToken, refreshToken }
 }
+
+export const createForgotPassword = async (data: CreateForgotPasswordInterface) => ForgotPasswordModel.create(data)
+
+export const getForgotPassword = async (query: FilterQuery<any>, projection: Record<string, any> = {}, options: QueryOptions | null = null) => ForgotPasswordModel.findOne(query, projection, options)
+
+export const updateForgotPassword = async (query: FilterQuery<any>, update: UpdateQuery<any> | UpdateWithAggregationPipeline, options: QueryOptions | null = null) =>  ForgotPasswordModel.updateOne(query, update, options)
