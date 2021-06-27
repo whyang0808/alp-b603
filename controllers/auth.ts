@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { BaseController } from './base'
 import { validateJWT, validateHash } from '../utils/auth'
 import { getUserWithId } from '../services/user'
-import { AccessTokenDetails, RefreshTokenDetails } from '../interfaces/token'
+import { AccessTokenDetails, RefreshTokenDetails } from '../types/token'
 import { generateAccessAndRefreshToken } from '../services/auth'
 
 const { JWT_SECRET, NODE_ENV } = process.env

@@ -1,5 +1,5 @@
 import { FilterQuery, QueryOptions, UpdateQuery, UpdateWithAggregationPipeline } from 'mongoose'
-import { CreateUserInterface } from '../interfaces/user'
+import { CreateUserInterface, ROLES } from '../types/user'
 import UserModel from '../models/user'
 
 export const checkUserExistsWithIdNumber = async (idNumber: string) => UserModel.exists({ idNumber })
@@ -11,6 +11,8 @@ export const getUserWithEmail = async (email: string, projection: Record<string,
 export const getUserPasswordHash = async (email: string) => UserModel.findOne({ email }, { password: 1, _id: 0 })
 
 export const createUser = async (data: CreateUserInterface) => UserModel.create(data)
+
+export const assignUserRole = async (userId: string, role: ROLES) => UserModel.updateOne({ id: userId }, { $push: { roles: role } });
 
 /**
  * Updates a document without returning the updated document, supposedly faster than findOneAndUpdate.

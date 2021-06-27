@@ -3,8 +3,10 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import mongoose from 'mongoose'
 import cookieParser from 'cookie-parser'
+import swaggerUi from "swagger-ui-express";
 import userRoutes from './routes/user'
 import authRoutes from './routes/auth'
+import apiDocs from "./documentation/apidocs.json";
 
 // Setup env
 dotenv.config()
@@ -36,5 +38,6 @@ app.use(cookieParser())
 // Configure routes
 app.use('/user', userRoutes)
 app.use('/auth', authRoutes)
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(apiDocs))
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`))

@@ -1,6 +1,6 @@
 export enum IdType {
-  IC = 'IC',
-  PASSPORT = 'PASSPORT'
+  IC = 'ic',
+  PASSPORT = 'passport'
 }
 
 export interface CreateUserInterface {
@@ -11,4 +11,12 @@ export interface CreateUserInterface {
   idType: IdType;
   idNumber: string;
   password: string;
+}
+
+export enum ROLES {
+  SUPERADMIN = 'superadmin',
+  ADMIN = 'admin',
+  AGENT = 'agent',
+  DEVELOPER = 'developer',
+  UNKNOWN = 'unknown'
 }

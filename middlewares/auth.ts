@@ -1,16 +1,16 @@
 import { Request, Response, NextFunction } from 'express'
 import dotenv from 'dotenv'
 import { BaseController } from '../controllers/base'
-import { ErrorMessage } from '../interfaces/error'
+import { ErrorMessage } from '../types/error'
 import { validateJWT } from '../utils/auth'
-import { AccessTokenDetails } from '../interfaces/token'
+import { AccessTokenDetails } from '../types/token'
 
 dotenv.config()
 const { JWT_SECRET } = process.env
 
 export default class AuthMiddleware extends BaseController {
   /**
-   * Middleware to verify if access token is valid. This middleware should be present on most if not all endpoints.
+   * Middleware to verify jwt.
    */
   public verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     if (!JWT_SECRET) return this.internalServerError(res)
