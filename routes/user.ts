@@ -22,4 +22,6 @@ router.get('/get-user-info/:userId', auth.verifyJWT, user.info)
 
 router.post('/update-password', auth.verifyJWT, user.updatePassword)
 
+router.get('/find-users', auth.verifyJWT, user.findUsersWithEmail)
+
 export default router

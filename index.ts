@@ -13,7 +13,7 @@ const { DATABASE_CONNECTION_STRING, DATABASE, PORT, NODE_ENV } = process.env
 // Setup database
 if (!DATABASE_CONNECTION_STRING || !DATABASE) throw 'Database string is undefined'
 mongoose
-  .connect(`${DATABASE_CONNECTION_STRING}/${DATABASE}`, { useNewUrlParser: true })
+  .connect(`${DATABASE_CONNECTION_STRING}/${DATABASE}`, { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true })
   .then(() => console.log(`Connected to ${DATABASE_CONNECTION_STRING} and database=${DATABASE}`))
   .catch(err => console.log(err))
 

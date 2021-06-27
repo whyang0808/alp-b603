@@ -23,3 +23,16 @@ export const updateOneUser = async (query: FilterQuery<any>, update: UpdateQuery
 export const findAndUpdateUser = async (query: FilterQuery<any>, update: UpdateQuery<any> | UpdateWithAggregationPipeline, options: QueryOptions | null = null) => UserModel.findOneAndUpdate(query, update, { ...options, new: true })
 
 export const getUserInfo = async (query: FilterQuery<any>, projection: Record<string, any> = {}) => UserModel.findOne(query, projection)
+
+/**
+ * Uses mongodb's full text search. email field is indexed in /models/user
+ * @param email - string
+ * @returns array of users
+ */
+export const searchUsersWithEmail = async (email: string, projection: Record<string, any> = { email: 1 }, sort = {}, limit = 2) => {
+  return UserModel.find(
+    { $text: { $search: email }},
+    projection,
+    { limit, sort: { ...sort, score: { $meta: "textScore" } } }
+  )
+}

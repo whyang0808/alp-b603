@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import moment from 'moment'
 import { BaseController } from './base'
-import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, updateOneUser, getUserWithId } from '../services/user'
+import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, updateOneUser, getUserWithId, searchUsersWithEmail } from '../services/user'
 import { validateEmail, validateObject } from '../utils/form'
 import { CreateUserInterface } from '../interfaces/user'
 import { ErrorMessage } from '../interfaces/error'
@@ -39,8 +39,8 @@ export default class UserController extends BaseController {
     if (!validateEmail(email)) return this.clientError(res)
 
     try {
-      const userExists = await checkUserExistsWithIdNumber(createUserData.idNumber)
-      if (userExists) return this.clientError(res, ErrorMessage.USER_EXISTS)
+      const [idNumberExists, emailExists] = await Promise.all([checkUserExistsWithIdNumber(createUserData.idNumber), getUserWithEmail(createUserData.email)])
+      if (idNumberExists || emailExists) return this.clientError(res, ErrorMessage.USER_EXISTS)
     } catch (userExistsError) {
       console.log(userExistsError, 'check user exists error')
       return this.internalServerError(res)
@@ -371,6 +371,17 @@ export default class UserController extends BaseController {
       )
       return this.ok(res, updatedUserPassword)
     } catch (updateError) {
+      return this.internalServerError(res)
+    }
+  }
+
+  public findUsersWithEmail = async (req: Request, res: Response) => {
+    const { email } = req.query
+    if (!email) return this.clientError(res)
+    try {
+      const users = await searchUsersWithEmail(email.toString(), { email: 1 }, {}, 5)
+      return this.ok(res, users)
+    } catch (findError) {
       return this.internalServerError(res)
     }
   }
