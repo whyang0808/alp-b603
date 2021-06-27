@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { v4 as uuidv4} from 'uuid'
 
 export const validateHash = async (value: string, hash: string) => bcrypt.compare(value, hash)
 
@@ -14,3 +15,5 @@ export const validateJWT = (jwtToken: string, secret: string) => jwt.verify(jwtT
  * @returns JWT token
  */
 export const generateJWT = (payload: Record<string, any>, secret: string, options: jwt.SignOptions) => jwt.sign(payload, secret, options)
+
+export const generateUUID = () => uuidv4()

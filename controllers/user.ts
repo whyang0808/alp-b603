@@ -1,15 +1,16 @@
 import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
+import moment from 'moment'
 import { BaseController } from './base'
-import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, findAndUpdateUser, getUserInfo, getUserWithId, updateOneUser } from '../services/user'
-import { validateObject } from '../utils/form'
+import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, updateOneUser, getUserWithId } from '../services/user'
+import { validateEmail, validateObject } from '../utils/form'
 import { CreateUserInterface } from '../interfaces/user'
 import { ErrorMessage } from '../interfaces/error'
-import { generateAccessAndRefreshToken } from '../services/auth'
+import { createForgotPassword, generateAccessAndRefreshToken, getForgotPassword, updateForgotPassword } from '../services/auth'
 import { AccessTokenDetails, RefreshTokenDetails } from '../interfaces/token'
-import { validateHash } from '../utils/auth'
+import { generateUUID, validateHash } from '../utils/auth'
 
-const { NODE_ENV } = process.env
+const { NODE_ENV, FRONTEND_BASE_URL } = process.env
 
 export default class UserController extends BaseController {
   /**
@@ -35,6 +36,7 @@ export default class UserController extends BaseController {
     } catch (validateError) {
       return this.clientError(res)
     }
+    if (!validateEmail(email)) return this.clientError(res)
 
     try {
       const userExists = await checkUserExistsWithIdNumber(createUserData.idNumber)
@@ -134,22 +136,22 @@ export default class UserController extends BaseController {
     const { userId } = res.locals
     if (!userId) return this.unauthorized(res)
     try {
-      const updatedUser = await findAndUpdateUser(
+      await updateOneUser(
         { _id: userId },
-        { firstName, lastName, birthDate },
-        { projection: { password: 0, refreshToken: 0, __v: 0 } }
+        { firstName, lastName, birthDate }
       )
-      return this.ok(res, updatedUser)
+      return this.ok(res)
     } catch (updateError) {
       return this.internalServerError(res)
     }
   }
 
   /**
-   * find and return user info object
-   * ???
-   * const { userId } = res.locals from auth.verifyJWT -----OR-----
-   * const { userId } = req.params
+   * 1) Check if user with email exists
+   * 2) Check if user still has active forgot password link, if yes, then invalidate the previous link
+   * 3) Generate and hash a token
+   * 4) Create a forgotPassword object in db
+   * 5) Generate reset password link and send to user email
    */
   public generateForgotPasswordLink = async (req: Request, res: Response) => {
     const { email } = req.body
@@ -310,12 +312,11 @@ export default class UserController extends BaseController {
   }
 
   public info = async (req: Request, res: Response) => {
-    const { userId } = res.locals
-    //  const { userId } = res.params
+    const { userId } = req.params
     if (!userId) return this.unauthorized(res)
     try {
-      const userInfo = await getUserInfo(
-        { _id: userId },
+      const userInfo = await getUserWithId(
+        userId,
         { password: 0, refreshToken: 0, __v: 0, _id: 0 }
       )
       return this.ok(res, userInfo)
@@ -331,7 +332,6 @@ export default class UserController extends BaseController {
    */
   public updatePassword = async (req: Request, res: Response) => {
     const { password, newPassword } = req.body
-    console.log('req.body', req.body)
     if (!password || !newPassword) return this.clientError(res)
 
     const { userId } = res.locals
