@@ -4,10 +4,10 @@ import moment from 'moment'
 import { BaseController } from './base'
 import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, updateOneUser, getUserWithId } from '../services/user'
 import { validateEmail, validateObject } from '../utils/form'
-import { CreateUserInterface } from '../interfaces/user'
-import { ErrorMessage } from '../interfaces/error'
+import { CreateUserInterface } from '../types/user'
+import { ErrorMessage } from '../types/error'
 import { createForgotPassword, generateAccessAndRefreshToken, getForgotPassword, updateForgotPassword } from '../services/auth'
-import { AccessTokenDetails, RefreshTokenDetails } from '../interfaces/token'
+import { AccessTokenDetails, RefreshTokenDetails } from '../types/token'
 import { generateUUID, validateHash } from '../utils/auth'
 
 const { NODE_ENV, FRONTEND_BASE_URL } = process.env

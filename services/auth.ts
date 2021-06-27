@@ -1,10 +1,10 @@
 import dotenv from 'dotenv'
 import bcrypt from 'bcrypt'
 import { FilterQuery, QueryOptions, UpdateQuery, UpdateWithAggregationPipeline } from 'mongoose'
-import { AccessTokenDetails, RefreshTokenDetails } from '../interfaces/token'
+import { AccessTokenDetails, RefreshTokenDetails } from '../types/token'
 import { generateJWT } from '../utils/auth'
 import { updateOneUser } from './user'
-import { CreateForgotPasswordInterface } from '../interfaces/auth'
+import { CreateForgotPasswordInterface } from '../types/auth'
 import ForgotPasswordModel from '../models/forgotPassword'
 
 dotenv.config()
