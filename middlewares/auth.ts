@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express'
 import dotenv from 'dotenv'
 import { BaseController } from '../controllers/base'
-import { ErrorMessage } from '../interfaces/error'
+import { ErrorMessage } from '../types/error'
 import { validateJWT } from '../utils/auth'
-import { AccessTokenDetails } from '../interfaces/token'
+import { AccessTokenDetails } from '../types/token'
 
 dotenv.config()
 const { JWT_SECRET } = process.env
