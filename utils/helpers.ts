@@ -18,7 +18,21 @@ export const validateObject = (data: Record<string, any>, optionalFields: string
 }
 
 /**
- * Validates if an email is in the format "anything@anything.anything"
+ * Checks if theres an intersection between 2 arrays
+ * @param array1 - array of strings
+ * @param array2 - array of strings
+ * @returns Boolean
+ */
+export const intersects = (array1: any[], array2: any[]) => {
+  for (let i = 0; i < array1.length; i += 1) {
+    for (let j = 0; j < array2.length; j += 1) {
+      if (array1[i] === array2[j]) return true
+    }
+  }
+  return false
+}
+
+/** Validates if an email is in the format "anything@anything.anything"
  * https://stackoverflow.com/a/9204568/15091497
  * @param email - string
  * @returns boolean

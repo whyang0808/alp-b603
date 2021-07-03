@@ -10,7 +10,7 @@ const { JWT_SECRET } = process.env
 
 export default class AuthMiddleware extends BaseController {
   /**
-   * Middleware to verify if access token is valid. This middleware should be present on most if not all endpoints.
+   * Middleware to verify jwt.
    */
   public verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     if (!JWT_SECRET) return this.internalServerError(res)
