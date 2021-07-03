@@ -20,7 +20,7 @@ export default class CaseController extends BaseController {
     const { caseId } = req.params
     if (!caseId) return this.clientError(res)
     try {
-      const caseData = await findCase(caseId, {}, 'user', { password: 0, refreshToken: 0 })
+      const caseData = await findCase(caseId)
       if (!caseData) return this.notFound(res)
       return this.ok(res, caseData)
     } catch (getError) {
