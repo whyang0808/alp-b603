@@ -6,20 +6,24 @@ const router = Router()
 const auth = new AuthMiddleware()
 const user = new UserController()
 
-router.route('/create').post(user.create)
+router.post('/create', user.create)
 
-router.route('/login').post(user.logIn)
+router.post('/login', user.logIn)
 
-router.route('/update').post(auth.verifyJWT, user.update)
+router.post('/update', auth.verifyJWT, user.update)
 
-router.route('/forgot-password').post(user.generateForgotPasswordLink)
+router.post('/forgot-password', user.generateForgotPasswordLink)
 
-router.route('/verify-hashed-reset-password-token').get(user.verifyHashedResetPasswordToken)
+router.get('/verify-hashed-reset-password-token', user.verifyHashedResetPasswordToken)
 
-router.route('/reset-password').post(user.resetPassword)
+router.post('/reset-password', user.resetPassword)
 
 router.get('/get-user-info/:userId', auth.verifyJWT, user.info)
 
 router.post('/update-password', auth.verifyJWT, user.updatePassword)
+
+router.get('/find-users', auth.verifyJWT, user.findUsersWithEmail)
+
+router.post('/assign-role', user.assignUserRole)
 
 export default router

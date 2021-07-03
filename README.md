@@ -29,6 +29,9 @@ Enums, interfaces, and types should be defined in `/types` directory.
 ## Tools
 Database Tool: Any mongodb GUI, recommended [NoSQLBooster](https://www.nosqlbooster.com/).
 
+## Documentation
+You can include new API documentation in the `apidocs.yaml` file in the root directory. Additionally, visit http://localhost:8000/api-docs to view the documentation
+
 ## Production setup
 To be changed.
 1. Run `yarn build`

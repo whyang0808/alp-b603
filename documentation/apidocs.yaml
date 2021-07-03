@@ -1,0 +1,208 @@
+openapi: 3.0.0
+info:
+  description: "API documentation of project ALP-B603."
+  version: "1.0.0"
+  title: "ALP-B603"
+tags:
+- name: "user"
+  description: "Operations about user"
+- name: "authentication"
+  description: "Operations about token authentication"
+paths:
+  /user/create:
+    post:
+      tags:
+      - "user"
+      summary: "Create user"
+      description: "This endpoint creates a user."
+      operationId: "createUser"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                firstName:
+                  type: "string"
+                  example: "fake first name"
+                lastName:
+                  type: "string"
+                  example: "fake last name"
+                birthDate:
+                  type: "string"
+                  example: "2021-06-19T07:21:49.691Z"
+                idType:
+                  type: "string"
+                  example: "ic"
+                idNumber:
+                  type: "string"
+                  example: "28193892313"
+                email:
+                  type: "string"
+                  example: "world@example.com"
+                password:
+                  type: "string"
+                  example: "abc123"
+      responses:
+        200:
+          $ref: "#/components/responses/UserResponse"
+        400:
+          description: "User already exists"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    example: "USER_EXISTS"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /user/login:
+    post:
+      tags:
+      - "user"
+      summary: "Login user"
+      description: "This endpoint logs a user in."
+      operationId: "loginUser"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                email:
+                  type: "string"
+                  example: "world@example.com"
+                password:
+                  type: "string"
+                  example: "abc123"
+      responses:
+        200:
+          $ref: "#/components/responses/SuccessTokenResponse"
+        400:
+          description: "Password or email is wrong. Note that if email or password is missing, this error will also be returned with message='Details are incorrect'"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    example: "EMAIL_OR_PASSWORD_WRONG"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+          
+  /auth/refresh:
+    post:
+      tags:
+      - "authentication"
+      summary: "Refresh JWT"
+      description: "This endpoint will refresh the JWT."
+      operationId: "refreshJWT"
+      parameters:
+        - in: cookie
+          name: rt
+          description: 'The refresh token'
+          required: true
+          schema:
+            type: string
+          example: 'eyJhbGciOiJOAW2NAS8sInR5cCI6IkpXVCJ9.eyJzdWIiOZAIU8Y3ODkwIiw'
+      responses:
+        200:
+          $ref: "#/components/responses/SuccessTokenResponse"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  responses:
+    UserResponse:
+      description: "Response with user object"
+      content:
+        application/json:
+          schema:
+            type: "object"
+            properties:
+              id:
+                type: "string"
+                example: "b6878273192"
+              firstName:
+                type: "string"
+                example: "fake first name"
+              lastName:
+                type: "string"
+                example: "fake last name"
+              birthDate:
+                type: "string"
+                example: "2021-06-19T07:21:49.691Z"
+              idType:
+                type: "string"
+                example: "ic"
+              idNumber:
+                type: "string"
+                example: "28193892313"
+              email:
+                type: "string"
+                example: "world@example.com"
+    InternalServerError:
+      description: "Internal server error"
+      content:
+        application/json:
+          schema:
+            type: "object"
+            properties:
+              message:
+                example: "Internal server error"
+    NotFoundError:
+      description: "Not found error"
+      content:
+        application/json:
+          schema:
+            type: "object"
+            properties:
+              message:
+                example: "Not found"
+    UnauthorizedError:
+      description: "Unauthorized error"
+      content:
+        application/json:
+          schema:
+            type: "object"
+            properties:
+              message:
+                example: "Unauthorized"
+    ForbiddenError:
+      description: "Forbidden error"
+      content:
+        application/json:
+          schema:
+            type: "object"
+            properties:
+              message:
+                example: "Forbidden"
+    BadRequestError:
+      description: "Bad request error"
+      content:
+        application/json:
+          schema:
+            type: "object"
+            properties:
+              message:
+                example: "Details are incorrect"
+    SuccessTokenResponse:
+      description: "Returns a JWT access token."
+      content:
+        application/json:
+          schema:
+            type: "object"
+            properties:
+              token:
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0N6IASD2UNM"
+      headers: 
+        Set-Cookie:
+          description: "Sets a refresh token in cookie"
+          schema: 
+            type: string
+            example: rt=eyJhbGciOiJOAW2NAS8sInR5cCI6IkpXVCJ9.eyJzdWIiOZAIU8Y3ODkwIiw; HttpOnly; SameSite; Secure;
