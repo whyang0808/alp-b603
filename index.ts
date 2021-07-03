@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser'
 import userRoutes from './routes/user'
 import authRoutes from './routes/auth'
 import companyRoutes from './routes/company'
+import caseRoutes from './routes/case'
 
 // Setup env
 dotenv.config()
@@ -38,5 +39,6 @@ app.use(cookieParser())
 app.use('/user', userRoutes)
 app.use('/auth', authRoutes)
 app.use('/company', companyRoutes)
+app.use('/case', caseRoutes)
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`))

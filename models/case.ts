@@ -4,7 +4,7 @@ const CaseSchema = new mongoose.Schema(
   {
     user: {
       type: Schema.Types.ObjectId,
-      ref: 'cases'
+      ref: 'users'
     },
     // TODO: any other fields?
   },
