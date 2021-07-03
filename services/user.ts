@@ -12,7 +12,7 @@ export const getUserPasswordHash = async (email: string) => UserModel.findOne({ 
 
 export const createUser = async (data: CreateUserInterface) => UserModel.create(data)
 
-export const assignUserRole = async (userId: string, company: string, role: ROLES) => UserModel.updateOne({ _id: userId }, { $addToSet: { roles: { company, role } } });
+export const assignUserRole = async (userId: string, companyId: string, role: ROLES) => UserModel.updateOne({ _id: userId }, { $addToSet: { roles: { company: companyId, role } } })
 
 /**
  * Updates a document without returning the updated document, supposedly faster than findOneAndUpdate.
@@ -33,8 +33,8 @@ export const getUserInfo = async (query: FilterQuery<any>, projection: Record<st
  */
 export const searchUsersWithEmail = async (email: string, projection: Record<string, any> = { email: 1 }, sort = {}, limit = 2) => {
   return UserModel.find(
-    { $text: { $search: email }},
+    { $text: { $search: email } },
     projection,
-    { limit, sort: { ...sort, score: { $meta: "textScore" } } }
+    { limit, sort: { ...sort, score: { $meta: 'textScore' } } }
   )
 }
