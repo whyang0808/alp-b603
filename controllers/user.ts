@@ -2,9 +2,9 @@ import bcrypt from 'bcrypt'
 import { Request, Response } from 'express'
 import moment from 'moment'
 import { BaseController } from './base'
-import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, updateOneUser, getUserWithId, searchUsersWithEmail } from '../services/user'
+import { checkUserExistsWithIdNumber, getUserWithEmail, createUser, updateOneUser, getUserWithId, searchUsersWithEmail, assignUserRole } from '../services/user'
 import { validateEmail, validateObject } from '../utils/helpers'
-import { CreateUserInterface } from '../types/user'
+import { CreateUserInterface, ROLES } from '../types/user'
 import { ErrorMessage } from '../types/error'
 import { createForgotPassword, generateAccessAndRefreshToken, getForgotPassword, updateForgotPassword } from '../services/auth'
 import { AccessTokenDetails, RefreshTokenDetails } from '../types/token'
@@ -382,6 +382,21 @@ export default class UserController extends BaseController {
       const users = await searchUsersWithEmail(email.toString(), { email: 1 }, {}, 5)
       return this.ok(res, users)
     } catch (findError) {
+      return this.internalServerError(res)
+    }
+  }
+
+  /**
+   * Push new role in to user's roles array
+   */
+  public assignUserRole = async (req: Request, res: Response) => {
+    const { userId, role } = req.body
+    // if role is not legit
+    if (!userId || !role || !Object.values(ROLES).includes(role)) return this.clientError(res)
+    try {
+      await assignUserRole(userId, role)
+      return this.ok(res)
+    } catch (roleError) {
       return this.internalServerError(res)
     }
   }
