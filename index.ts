@@ -7,6 +7,7 @@ import swaggerUi from "swagger-ui-express";
 import userRoutes from './routes/user'
 import authRoutes from './routes/auth'
 import apiDocs from "./documentation/apidocs.json";
+import companyRoutes from './routes/company'
 
 // Setup env
 dotenv.config()
@@ -39,5 +40,6 @@ app.use(cookieParser())
 app.use('/user', userRoutes)
 app.use('/auth', authRoutes)
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(apiDocs))
+app.use('/company', companyRoutes)
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`))

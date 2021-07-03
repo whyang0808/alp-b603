@@ -24,7 +24,7 @@ The requests flow:
 
 Services should contain most of the db logic/query and if best should be reusable, controllers contain the business logic and should trigger the services and not trigger the models directly.
 
-Enums, interfaces, and types should be defined in `/interfaces` directory.
+Enums, interfaces, and types should be defined in `/types` directory.
 
 ## Tools
 Database Tool: Any mongodb GUI, recommended [NoSQLBooster](https://www.nosqlbooster.com/).
