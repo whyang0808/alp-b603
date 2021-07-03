@@ -390,11 +390,11 @@ export default class UserController extends BaseController {
    * Push new role in to user's roles array
    */
   public assignUserRole = async (req: Request, res: Response) => {
-    const { userId, role } = req.body
+    const { userId, companyId, role } = req.body
     // if role is not legit
-    if (!userId || !role || !Object.values(ROLES).includes(role)) return this.clientError(res)
+    if (!userId || !companyId || !role || !Object.values(ROLES).includes(role)) return this.clientError(res)
     try {
-      await assignUserRole(userId, role)
+      await assignUserRole(userId, companyId, role)
       return this.ok(res)
     } catch (roleError) {
       return this.internalServerError(res)

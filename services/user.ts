@@ -12,7 +12,7 @@ export const getUserPasswordHash = async (email: string) => UserModel.findOne({ 
 
 export const createUser = async (data: CreateUserInterface) => UserModel.create(data)
 
-export const assignUserRole = async (userId: string, role: ROLES) => UserModel.updateOne({ _id: userId }, { $addToSet: { roles: role } });
+export const assignUserRole = async (userId: string, company: string, role: ROLES) => UserModel.updateOne({ _id: userId }, { $addToSet: { roles: { company, role } } });
 
 /**
  * Updates a document without returning the updated document, supposedly faster than findOneAndUpdate.
