@@ -27,7 +27,16 @@ const UserSchema = new mongoose.Schema(
     },
     refreshToken: {
       type: String
-    }
+    },
+    roles: [{
+      company: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'companies'
+      },
+      role: {
+        type: String
+      }
+    }]
   },
   { strict: false }
 )
