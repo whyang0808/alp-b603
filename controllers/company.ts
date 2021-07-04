@@ -1,7 +1,9 @@
 import { Request, Response } from 'express'
 import { createCompany, findOneCompany, updateOneCompany } from '../services/company'
+import { assignUserRole } from '../services/user'
 import { CreateCompanyInterface } from '../types/company'
 import { ErrorMessage } from '../types/error'
+import { ROLES } from '../types/user'
 import { BaseController } from './base'
 
 export default class CompanyController extends BaseController {
@@ -19,7 +21,9 @@ export default class CompanyController extends BaseController {
     }
 
     try {
-      const response = await createCompany(createCompanyData)
+      const company = await createCompany(createCompanyData)
+      // what if create company were successful but assign user role fails? Should we delete the newly created company?
+      const response = await assignUserRole(res.locals.userId, company._id, ROLES.SUPERADMIN)
       return this.ok(res, response)
     } catch (createCompanyError) {
       return this.internalServerError(res)

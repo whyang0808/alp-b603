@@ -4,7 +4,10 @@ export interface AccessTokenDetails {
   payload: {
     sub: string,
     context: {
-      roles: string[]
+      roles: [{
+        company: any,
+        role: string
+      }]
     }
   },
   options: SignOptions
