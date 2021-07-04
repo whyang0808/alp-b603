@@ -83,7 +83,7 @@ export default class UserController extends BaseController {
 
     let user: Record<string, any>
     try {
-      user = await getUserWithEmail(email, { email: 1, password: 1 })
+      user = await getUserWithEmail(email, { email: 1, password: 1, roles: 1 })
       if (!user) return this.clientError(res, ErrorMessage.EMAIL_OR_PASSWORD_WRONG)
     } catch (userExistsError) {
       console.log(userExistsError, 'check user exists error')
@@ -120,7 +120,7 @@ export default class UserController extends BaseController {
     try {
       const { accessToken, refreshToken } = await generateAccessAndRefreshToken(accessTokenDetails, refreshTokenDetails, user._id)
       res.cookie('rt', refreshToken, { httpOnly: true, sameSite: true, secure: NODE_ENV === 'production' })
-      return this.ok(res, { token: accessToken, userId: user._id })
+      return this.ok(res, { token: accessToken, userId: user._id, roles: user.roles })
     } catch (tokenError) {
       console.log(tokenError, 'failed to generate access and refresh token')
       return this.internalServerError(res)

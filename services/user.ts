@@ -6,7 +6,7 @@ export const checkUserExistsWithIdNumber = async (idNumber: string) => UserModel
 
 export const getUserWithId = async (id: string, projection: Record<string, any> = {}, options: QueryOptions | null = null) => UserModel.findById(id, projection, options)
 
-export const getUserWithEmail = async (email: string, projection: Record<string, any> = {}, options: QueryOptions | null = null) => UserModel.findOne({ email }, projection, options)
+export const getUserWithEmail = async (email: string, projection: Record<string, any> = {}, options: QueryOptions | null = null) => UserModel.findOne({ email }, projection, options).populate('roles.company')
 
 export const getUserPasswordHash = async (email: string) => UserModel.findOne({ email }, { password: 1, _id: 0 })
 
