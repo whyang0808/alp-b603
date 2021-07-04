@@ -6,7 +6,7 @@ const router = Router()
 const auth = new AuthMiddleware()
 const company = new CompanyController()
 
-router.post('/create', company.create)
+router.post('/create', auth.verifyJWT, company.create)
 
 router.get('/:id', auth.verifyJWT, company.find)
 
