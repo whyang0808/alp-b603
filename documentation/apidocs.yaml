@@ -8,6 +8,8 @@ tags:
   description: "Operations about user"
 - name: "authentication"
   description: "Operations about token authentication"
+- name: "company"
+  description: "Operations about company"
 paths:
   /user/create:
     post:
@@ -92,6 +94,291 @@ paths:
                     example: "EMAIL_OR_PASSWORD_WRONG"
         500:
           $ref: "#/components/responses/InternalServerError"
+  /user/update:
+    post:
+      tags:
+      - "user"
+      security:
+        - bearerAuth: []
+      summary: "Update user details"
+      description: "This endpoint update's a user's details"
+      operationId: "updateUser"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                firstName:
+                  type: "string"
+                  example: "fake first name"
+                lastName:
+                  type: "string"
+                  example: "fake last name"
+                birthDate:
+                  type: "string"
+                  example: "2021-06-19T07:21:49.691Z"
+      responses:
+        200:
+          $ref: "#/components/responses/SuccessResponse"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /user/forgot-password:
+    post:
+      tags:
+      - "user"
+      summary: "Forgot password endpoint"
+      description: "When clicks on forgot password"
+      operationId: "forgotPassword"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                email:
+                  type: "string"
+                  example: "world@example.com"
+      responses:
+        200:
+          $ref: "#/components/responses/SuccessResponse"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /user/verify-hashed-reset-password-token:
+    get:
+      tags:
+      - "user"
+      summary: "Verify forgot password token"
+      description: "When user clicks on forgot password link in email"
+      operationId: "forgotPasswordVerify"
+      parameters:
+        - in: query 
+          name: email
+          schema:
+            type: string
+        - in: query
+          name: token
+          schema:
+            type: string
+          description: The forgot password token in the url sent to the user via email.
+      responses:
+        200:
+          $ref: "#/components/responses/SuccessResponse"
+        400:
+          description: 'Bad request'
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: "object"
+                    properties:
+                      message:
+                        example: "Details are incorrect"
+                  - type: "object"
+                    properties:
+                      message:
+                        example: "TOKEN_INVALID"
+              example:
+                message: "TOKEN_INVALID"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /user/reset-password:
+    post:
+      tags:
+      - "user"
+      summary: "reset user password"
+      description: "When user forgot password"
+      operationId: "resetPassword"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                email:
+                  type: "string"
+                  example: "world@example.com"
+                token:
+                  type: "string"
+                  example: "eyJhbGciOiJOAW2NAS8sInR5cCI6IkpXVCJ9"
+                  description: "Forgot password token"
+                newPassword:
+                  type: "string"
+                  example: "Abcd123$"
+      responses:
+        200:
+          $ref: "#/components/responses/SuccessResponse"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /user/get-user-info/{userId}:
+    get:
+      tags:
+      - "user"
+      security:
+        - bearerAuth: []
+      summary: "Get user's info"
+      description: "Get user's info, this route is jwt protected"
+      operationId: "getUserInfo"
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: "Response with user object"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  firstName:
+                    type: "string"
+                    example: "fake first name"
+                  lastName:
+                    type: "string"
+                    example: "fake last name"
+                  birthDate:
+                    type: "string"
+                    example: "2021-06-19T07:21:49.691Z"
+                  idType:
+                    type: "string"
+                    example: "ic"
+                  idNumber:
+                    type: "string"
+                    example: "28193892313"
+                  email:
+                    type: "string"
+                    example: "world@example.com"
+                  roles:
+                    type: "array"
+                    items:
+                      type: object
+                      properties:
+                        company:
+                          type: string
+                        role:
+                          type: string
+                    example: 
+                      - company: "BA8923NBjkz"
+                        role: "admin"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /user/update-password:
+    post:
+      tags:
+      - "user"
+      security:
+        - bearerAuth: []
+      operationId: "updatePassword"
+      summary: "Update user's password"
+      description: "Compare current password and update if success"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                password:
+                  type: "string"
+                  example: "Abcd123$"
+                newPassword:
+                  type: "string"
+                  example: "1234ABCd$"
+      responses:
+        200:
+          $ref: "#/components/responses/SuccessResponse"
+        400:
+          description: "Bad request error"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  message:
+                    type: "string"
+                    example: "EMAIL_OR_PASSWORD_WRONG"
+        401:
+          $ref: "#/components/responses/UnauthorizedError"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /user/find-users:
+    get:
+      tags:
+      - "user"
+      security:
+        - bearerAuth: []
+      operationId: "findUsers"
+      summary: "Find a user with mongodb full text search"
+      description: "Returns users with similar emails"
+      parameters:
+        - in: query 
+          name: email
+          schema:
+            type: string
+      responses:
+        200:
+          description: "Returns an array of matching users"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  type: "object"
+                  properties:
+                    email:
+                      type: string
+                example:
+                  - email: "world@example.com"
+                    _id: "OAS248bsodi"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /user/assign-role:
+    post:
+      tags:
+      - "user"
+      security:
+        - bearerAuth: []
+      operationId: "assignUserRole"
+      summary: "Assign user a role in a company"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                userId:
+                  type: "string"
+                  example: "AOBNFDA892kd"
+                company:
+                  type: "string"
+                  example: "OAHOF81273IOKJkl"
+                  description: "Company ID"
+      responses:
+        200:
+          $ref: "#/components/responses/SuccessResponse"
+        400:
+          $ref: "#/components/responses/BadRequestError"
+        500:
+          $ref: "#/components/responses/InternalServerError"
           
   /auth/refresh:
     post:
@@ -115,8 +402,138 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         500:
           $ref: "#/components/responses/InternalServerError"
+          
+  /company/create:
+    post:
+      tags:
+        - "company"
+      summary: "Creates a company"
+      description: "Creates company"
+      operationId: "createCompany"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                registrationId:
+                  type: "string"
+                  example: "AOBNFDA892kd"
+                  description: "Registration ID of company"
+                name:
+                  type: "string"
+                  example: "Company ABC"
+                approved:
+                  type: "boolean"
+      responses:
+        200:
+          $ref: "#/components/responses/SuccessResponse"
+        400:
+          description: "Bad request error"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: "object"
+                    properties:
+                      message:
+                        example: "COMPANY_EXISTS"
+                  - type: "object"
+                    properties:
+                      message:
+                        example: "Details are incorrect"
+        500:
+          $ref: "#/components/responses/InternalServerError"
+  /company/{id}:
+    get:
+      tags:
+        - "company"
+      security:
+        - bearerAuth: []
+      summary: "Get company's info"
+      description: "Get company's info"
+      operationId: "getCompanyInfo"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        200:
+          description: "Returns company object"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  _id:
+                    type: "string"
+                    example: "AOSBNOI273jso"
+                  registrationId:
+                    type: "string"
+                    example: "BAOSI127487"
+                  name:
+                    type: "string"
+                    example: "Company ABC"
+                  approved:
+                    type: "boolean"
+  /company/update:
+    post:
+      tags:
+        - "company"
+      security:
+        - bearerAuth: []
+      summary: "Update company's info"
+      description: "Update company's info"
+      operationId: "updateCompanyInfo"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: "object"
+              properties:
+                registrationId:
+                  type: "string"
+                  example: "AOBNFDA892kd"
+                  description: "Registration ID of company"
+                name:
+                  type: "string"
+                  example: "Company ABC"
+                approved:
+                  type: "boolean"
+                id:
+                  type: "string"
+                  example: "OIASH238Jsonjks"
+                  description: "ID of company in db"
+      responses:
+        200:
+          $ref: "#/components/responses/SuccessResponse"
+        400:
+          description: "Bad request error"
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - type: "object"
+                    properties:
+                      message:
+                        example: "COMPANY_EXISTS"
+                  - type: "object"
+                    properties:
+                      message:
+                        example: "Details are incorrect"
+        500:
+          $ref: "#/components/responses/InternalServerError"
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   responses:
     UserResponse:
       description: "Response with user object"
@@ -125,7 +542,7 @@ components:
           schema:
             type: "object"
             properties:
-              id:
+              _id:
                 type: "string"
                 example: "b6878273192"
               firstName:
@@ -146,6 +563,8 @@ components:
               email:
                 type: "string"
                 example: "world@example.com"
+    SuccessResponse:
+      description: "Ok response"
     InternalServerError:
       description: "Internal server error"
       content:
