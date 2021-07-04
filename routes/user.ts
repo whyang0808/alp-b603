@@ -24,6 +24,6 @@ router.post('/update-password', auth.verifyJWT, user.updatePassword)
 
 router.get('/find-users', auth.verifyJWT, user.findUsersWithEmail)
 
-router.post('/assign-role', user.assignUserRole)
+router.post('/assign-role', auth.verifyJWT, user.assignUserRole)
 
 export default router
